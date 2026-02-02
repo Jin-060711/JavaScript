@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Col·lecció de pel·lícules</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        h1 {
+            text-align: center;
+        }
+        .search-container {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        #search-input {
+            padding: 0.7rem;
+            width: 300px;
+            margin-right: 0.5rem;
+            border: 1px solid #ccc;
+        }
+        #search-btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            background-color: #000;
+            color: #fff;
+            cursor: pointer;
+        }
+        .films-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .film-card {
+            border: 1px solid #ccc;
+            padding: 1rem;
+        }
+        .film-card h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+        .film-card p {
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Col·lecció de pel·lícules</h1>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Cerca...">
+        <button id="search-btn">Cerca</button>
+    </div>
+
+    <div class="films-grid" id="films-container"></div>
+
+    <script src="infopelis.js"></script>
+    <script>
+        // Obtenemos elementos del DOM para la búsqueda y visualización
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const filmsContainer = document.getElementById('films-container');
+
+        // Función para renderizar las tarjetas de películas
+        function renderFilms(filmsList) {
+            filmsContainer.innerHTML = ''; // Limpiar contenedor antes de renderizar
+
+            filmsList.forEach(film => {
+                const card = document.createElement('div');
+                card.classList.add('film-card');
+
+                // Formato de tarjeta exacto del PDF
+                card.innerHTML = `
+                    <h2>${film.name}</h2>
+                    <p><strong>Year:</strong> ${film.year}</p>
+                    <p><strong>Style:</strong> ${film.style}</p>
+                    <p><strong>Director:</strong> ${film.director}</p>
+                    <p><strong>Actors:</strong> ${film.actors.join(', ')}</p>
+                    <p><strong>Oscars:</strong> ${film.oscars}</p>
+                `;
+
+                filmsContainer.appendChild(card);
+            });
+        }
+
+        // Función para filtrar películas por cualquier campo
+        function filterFilms() {
+            const searchText = searchInput.value.toLowerCase().trim();
+
+            // Si el campo de búsqueda está vacío, mostrar todas las películas
+            if (!searchText) {
+                renderFilms(films);
+                return;
+            }
+
+            // Filtrar por todos los campos: nombre, año, estilo, director, actores, Oscars
+            const filtered = films.filter(film => {
+                return film.name.toLowerCase().includes(searchText) ||
+                       film.year.toString().includes(searchText) ||
+                       film.style.toLowerCase().includes(searchText) ||
+                       film.director.toLowerCase().includes(searchText) ||
+                       film.actors.some(actor => actor.toLowerCase().includes(searchText)) ||
+                       film.oscars.toString().includes(searchText);
+            });
+
+            renderFilms(filtered);
+        }
+
+        // Renderizar todas las películas al cargar la página
+        window.addEventListener('load', () => {
+            renderFilms(films);
+        });
+
+        // Eventos para la búsqueda
+        searchBtn.addEventListener('click', filterFilms);
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') filterFilms();
+        });
+    </script>
+</body>
+</html>

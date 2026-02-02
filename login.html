@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validació contrasenya</title>
+    <style>
+        /* Estil minimalista */
+        body {
+            font-family: Arial, sans-serif;
+            width: 400px;
+            margin: 20px;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 200px;
+            padding: 4px;
+            border: 1px solid #000;
+        }
+        /* Estil del text d’ajuda: X vermella i ✓ verda*/
+        .info-div {
+            font-size: 14px;
+            margin: 3px 0;
+        }
+        .invalid {
+            color: red;
+        }
+        .valid {
+            color: green;
+        }
+        /* Botó Submit amagat per defecte; es mostra quan es compleixen les condicions */
+        #submit-btn {
+            display: none;
+            margin-top: 10px;
+            padding: 5px 15px;
+            border: 1px solid #000;
+            background: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Validació contrasenya</h1>
+    <form id="login-form">
+        <!-- Camp d’entrada de nom d’usuari -->
+        <div class="form-group">
+            <label for="username">Nom</label>
+            <input type="text" id="username" value="">
+            <div id="username-info" class="info-div invalid">X El nom ha de contenir una @</div>
+        </div>
+
+        <!-- Camp de contrasenya + casella per mostrar/ocultar -->
+        <div class="form-group">
+            <label for="password">Contrasenya</label>
+            <input type="password" id="password" value="">
+            <br>
+            <input type="checkbox" id="show-password">
+            <label for="show-password" style="display: inline;">Mostrar contrasenya</label>
+
+            <!-- Missatges de validació de la contrasenya -->
+            <div id="lowercase-info" class="info-div invalid">X Una lletra minuscula</div>
+            <div id="uppercase-info" class="info-div invalid">X Una lletra majuscula</div>
+            <div id="number-info" class="info-div invalid">X Un numero</div>
+            <div id="length-info" class="info-div invalid">X Minim 8 caracters</div>
+        </div>
+
+        <!-- Botó Submit: ID correcte, obligatori -->
+        <button type="submit" id="submit-btn">Enviar</button>
+    </form>
+
+    <script>
+        // Obté els elements del DOM, assegurant-se que no en falti cap
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const showPwd = document.getElementById('show-password');
+        const submitBtn = document.getElementById('submit-btn');
+        const form = document.getElementById('login-form');
+
+        // Elements dels missatges de validació
+        const userInfo = document.getElementById('username-info');
+        const lowerInfo = document.getElementById('lowercase-info');
+        const upperInfo = document.getElementById('uppercase-info');
+        const numInfo = document.getElementById('number-info');
+        const lenInfo = document.getElementById('length-info');
+
+        // 1. Validació del nom d’usuari: ha de contenir @
+        function checkUser() {
+            if (username.value.includes('@')) {
+                userInfo.className = 'info-div valid';
+                userInfo.textContent = "✓ El nom ha de contenir una @";
+                return true;
+            } else {
+                userInfo.className = 'info-div invalid';
+                userInfo.textContent = "X El nom ha de contenir una @";
+                return false;
+            }
+        }
+
+        // 2. Validació de la contrasenya: cal que es compleixin les quatre condicions
+        function checkPwd() {
+            const pwd = password.value;
+            const hasLower = /[a-z]/.test(pwd);
+            const hasUpper = /[A-Z]/.test(pwd);
+            const hasNum = /\d/.test(pwd);
+            const hasLen = pwd.length >= 8;
+
+            // Actualitza l’estat i el text de cada missatge
+            lowerInfo.className = hasLower ? 'info-div valid' : 'info-div invalid';
+            lowerInfo.textContent = hasLower ? "✓ Una lletra minuscula" : "X Una lletra minuscula";
+            
+            upperInfo.className = hasUpper ? 'info-div valid' : 'info-div invalid';
+            upperInfo.textContent = hasUpper ? "✓ Una lletra majuscula" : "X Una lletra majuscula";
+            
+            numInfo.className = hasNum ? 'info-div valid' : 'info-div invalid';
+            numInfo.textContent = hasNum ? "✓ Un numero" : "X Un numero";
+            
+            lenInfo.className = hasLen ? 'info-div valid' : 'info-div invalid';
+            lenInfo.textContent = hasLen ? "✓ Minim 8 caracters" : "X Minim 8 caracters";
+
+            // Retorna true només si es compleixen les quatre condicions
+            return hasLower && hasUpper && hasNum && hasLen;
+        }
+
+        // 3. Lògica principal: comprova totes les condicions i mostra/amaga el botó Submit
+        function checkAll() {
+            const isUserOk = checkUser();
+            const isPwdOk = checkPwd();
+            // Si totes dues condicions són vàlides → mostra el botó; si no, l’amaga
+            submitBtn.style.display = (isUserOk && isPwdOk) ? "block" : "none";
+        }
+
+        // 4. Funcionalitat per mostrar/ocultar la contrasenya
+        showPwd.addEventListener('change', () => {
+            password.type = showPwd.checked ? 'text' : 'password';
+        });
+
+        // 5. Validació en temps real: comprova a cada canvi de text
+        username.addEventListener('input', checkAll);
+        password.addEventListener('input', checkAll);
+
+        // 6. Gestió de l’enviament: redirigeix a pelicules.html
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            window.location.href = 'pelicules.html';
+        });
+    </script>
+</body>
+</html>
